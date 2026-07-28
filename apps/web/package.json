@@ -1,0 +1,36 @@
+{
+  "name": "@viberoom/web",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@ducanh2912/next-pwa": "latest",
+    "@tensorflow/tfjs": "latest",
+    "@viberoom/types": "*",
+    "firebase": "^10.12.0",
+    "framer-motion": "^11.3.0",
+    "lucide-react": "^0.400.0",
+    "nsfwjs": "^4.3.0",
+    "next": "^16.2.12",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "simple-peer": "^9.11.1",
+    "cloudinary": "^2.3.0",
+    "socket.io-client": "^4.8.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.0",
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/simple-peer": "^9.11.8",
+    "postcss": "^8.4.39",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.5.0"
+  }
+}
