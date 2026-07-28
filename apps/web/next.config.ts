@@ -19,6 +19,7 @@ const nextConfig: NextConfig = {
     ],
   },
   serverExternalPackages: ['@tensorflow/tfjs-node'],
+  turbopack: {},
   experimental: {},
 };
 
