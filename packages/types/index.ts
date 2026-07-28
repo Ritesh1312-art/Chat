@@ -24,9 +24,24 @@ export const SUPPORTED_LANGUAGES: Language[] = [
   { code: 'de', name: 'German', nativeName: 'Deutsch' },
   { code: 'ko', name: 'Korean', nativeName: '한국어' },
   { code: 'zh', name: 'Chinese', nativeName: '中文' },
+  { code: 'it', name: 'Italian', nativeName: 'Italiano' },
+  { code: 'tr', name: 'Turkish', nativeName: 'Türkçe' },
+  { code: 'vi', name: 'Vietnamese', nativeName: 'Tiếng Việt' },
+  { code: 'pl', name: 'Polish', nativeName: 'Polski' },
+  { code: 'nl', name: 'Dutch', nativeName: 'Nederlands' },
+  { code: 'id', name: 'Indonesian', nativeName: 'Bahasa Indonesia' },
+  { code: 'th', name: 'Thai', nativeName: 'ไทย' },
+  { code: 'fa', name: 'Persian', nativeName: 'فارسی' },
+  { code: 'ur', name: 'Urdu', nativeName: 'اردو' },
+  { code: 'pa', name: 'Punjabi', nativeName: 'ਪੰਜਾਬੀ' },
+  { code: 'gu', name: 'Gujarati', nativeName: 'ગુજરાતી' },
   { code: 'ta', name: 'Tamil', nativeName: 'தமிழ்' },
   { code: 'te', name: 'Telugu', nativeName: 'తెలుగు' },
-  { code: 'mr', name: 'Marathi', nativeName: 'मराठी' }
+  { code: 'mr', name: 'Marathi', nativeName: 'मराठी' },
+  { code: 'ml', name: 'Malayalam', nativeName: 'മലയാളം' },
+  { code: 'kn', name: 'Kannada', nativeName: 'ಕನ್ನಡ' },
+  { code: 'sw', name: 'Swahili', nativeName: 'Kiswahili' },
+  { code: 'uk', name: 'Ukrainian', nativeName: 'Українська' }
 ];
 
 export interface IUser {

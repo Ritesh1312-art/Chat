@@ -24,6 +24,39 @@ const MOCK_USER = {
   }
 };
 
+const ALL_WORLD_LANGUAGES = [
+  { code: 'en', name: 'English', nativeName: 'English' },
+  { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी' },
+  { code: 'es', name: 'Spanish', nativeName: 'Español' },
+  { code: 'fr', name: 'French', nativeName: 'Français' },
+  { code: 'ar', name: 'Arabic', nativeName: 'العربية' },
+  { code: 'pt', name: 'Portuguese', nativeName: 'Português' },
+  { code: 'bn', name: 'Bengali', nativeName: 'বাংলা' },
+  { code: 'ru', name: 'Russian', nativeName: 'Русский' },
+  { code: 'ja', name: 'Japanese', nativeName: '日本語' },
+  { code: 'de', name: 'German', nativeName: 'Deutsch' },
+  { code: 'ko', name: 'Korean', nativeName: '한국어' },
+  { code: 'zh', name: 'Chinese', nativeName: '中文' },
+  { code: 'it', name: 'Italian', nativeName: 'Italiano' },
+  { code: 'tr', name: 'Turkish', nativeName: 'Türkçe' },
+  { code: 'vi', name: 'Vietnamese', nativeName: 'Tiếng Việt' },
+  { code: 'pl', name: 'Polish', nativeName: 'Polski' },
+  { code: 'nl', name: 'Dutch', nativeName: 'Nederlands' },
+  { code: 'id', name: 'Indonesian', nativeName: 'Bahasa Indonesia' },
+  { code: 'th', name: 'Thai', nativeName: 'ไทย' },
+  { code: 'fa', name: 'Persian', nativeName: 'فارسی' },
+  { code: 'ur', name: 'Urdu', nativeName: 'اردو' },
+  { code: 'pa', name: 'Punjabi', nativeName: 'ਪੰਜਾਬੀ' },
+  { code: 'gu', name: 'Gujarati', nativeName: 'ગુજરાતી' },
+  { code: 'ta', name: 'Tamil', nativeName: 'தமிழ்' },
+  { code: 'te', name: 'Telugu', nativeName: 'తెలుగు' },
+  { code: 'mr', name: 'Marathi', nativeName: 'मराठी' },
+  { code: 'ml', name: 'Malayalam', nativeName: 'മലയാളം' },
+  { code: 'kn', name: 'Kannada', nativeName: 'ಕನ್ನಡ' },
+  { code: 'sw', name: 'Swahili', nativeName: 'Kiswahili' },
+  { code: 'uk', name: 'Ukrainian', nativeName: 'Українська' }
+];
+
 export default function ProfilePage() {
   const [user, setUser] = useState(MOCK_USER);
   const [expandedSection, setExpandedSection] = useState<string | null>('preferences');
@@ -102,9 +135,11 @@ export default function ProfilePage() {
                 <div className="pt-2">
                   <label className="block text-sm text-white/60 mb-2">Native Language</label>
                   <select className="w-full bg-[#080810]/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-violet-500">
-                    <option value="en">English</option>
-                    <option value="hi">Hindi</option>
-                    <option value="bn">Bengali</option>
+                    {ALL_WORLD_LANGUAGES.map(lang => (
+                      <option key={lang.code} value={lang.code} className="bg-[#080810]">
+                        {lang.name} ({lang.nativeName})
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <div>
@@ -112,6 +147,7 @@ export default function ProfilePage() {
                   <select className="w-full bg-[#080810]/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-violet-500">
                     <option value="male">Male</option>
                     <option value="female">Female</option>
+                    <option value="prefer_not_to_say">Prefer Not To Say</option>
                   </select>
                 </div>
                 <div className="pt-2 border-t border-white/10">
@@ -128,9 +164,12 @@ export default function ProfilePage() {
                     <div>
                       <label className="block text-xs text-white/50 mb-1">Preferred Language</label>
                       <select className="w-full bg-[#080810]/50 border border-white/10 rounded-xl p-2 text-sm text-white">
-                        <option value="any">Any</option>
-                        <option value="hi">Hindi</option>
-                        <option value="en">English</option>
+                        <option value="any">Any Language</option>
+                        {ALL_WORLD_LANGUAGES.map(lang => (
+                          <option key={lang.code} value={lang.code} className="bg-[#080810]">
+                            {lang.name} ({lang.nativeName})
+                          </option>
+                        ))}
                       </select>
                     </div>
                   </div>
