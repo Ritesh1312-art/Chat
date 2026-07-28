@@ -18,11 +18,11 @@ export const viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.webmanifest" />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         <ToastProvider>
           <AuthProvider>
             <SocketProvider>
