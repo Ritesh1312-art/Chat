@@ -6,7 +6,14 @@ class RedisServiceImpl {
   public client: Redis;
 
   constructor() {
-    this.client = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
+    const url = process.env.REDIS_URL;
+    const validUrl = url && !url.includes('PLACEHOLDER') ? url : 'redis://127.0.0.1:6379';
+    this.client = new Redis(validUrl, {
+      maxRetriesPerRequest: 1,
+      lazyConnect: true,
+      retryStrategy() { return null; }
+    });
+    this.client.on('error', () => {});
   }
 
   async connect() {

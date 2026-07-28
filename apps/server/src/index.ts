@@ -1,4 +1,8 @@
-import 'dotenv/config';
+try {
+  const dotenv = require('dotenv');
+  dotenv.config({ path: '../../.env' });
+  dotenv.config();
+} catch (e) {}
 import express from 'express';
 import http from 'http';
 import cors from 'cors';
