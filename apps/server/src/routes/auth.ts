@@ -5,6 +5,7 @@ import { verifyIdToken } from '../config/firebase';
 import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 import { getRedisClient } from '../config/redis';
+import { RedisService } from '../services/RedisService';
 
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_key';

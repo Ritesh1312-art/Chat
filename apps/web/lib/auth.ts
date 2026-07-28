@@ -1,9 +1,15 @@
 export interface IUser {
   _id: string;
-  phone: string;
+  phoneNumber?: string;
+  phone?: string;
+  displayName?: string;
   name?: string;
   avatar?: string;
-  coins: number;
+  walletBalance?: number;
+  coins?: number;
+  nativeLanguage?: string;
+  gender?: string;
+  isBanned?: boolean;
 }
 
 export function getToken(): string | null {
@@ -49,14 +55,21 @@ export function isTokenExpired(token: string): boolean {
 
 export async function fetchCurrentUser(token: string): Promise<IUser | null> {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/auth/me`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/api/auth/me`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
     });
     if (!res.ok) return null;
     const data = await res.json();
-    return data.user;
+    const rawUser = data.user || data;
+    if (!rawUser || !rawUser._id) return null;
+    return {
+      ...rawUser,
+      name: rawUser.displayName || rawUser.name || 'User',
+      phone: rawUser.phoneNumber || rawUser.phone || '',
+      coins: rawUser.walletBalance ?? rawUser.coins ?? 0,
+    };
   } catch (err) {
     return null;
   }

@@ -2,12 +2,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-
-// Mock hook and firebase for compilation
-const useAuth = () => ({ login: async (token: string) => ({ displayName: '' }) });
-const RecaptchaVerifier = class { constructor(id: string, config: any, auth: any) {} render() { return Promise.resolve(); } };
-const signInWithPhoneNumber = async (auth: any, phone: string, verifier: any) => ({ confirm: async (otp: string) => ({ user: { getIdToken: async () => 'mock-token' } }) });
-const auth = {};
+import { useAuth } from '@/contexts/AuthContext';
+import { sendOtp, verifyOtp, RecaptchaVerifier } from '@/lib/firebase';
 
 const COUNTRIES = [
   { code: '+91', flag: '🇮🇳' },
@@ -92,17 +88,13 @@ export default function LoginPage() {
     setError('');
     setLoading(true);
     try {
-      // Mock verify
-      // const result = await confirmationResult.confirm(otpString);
-      // const idToken = await result.user.getIdToken();
-      const idToken = 'mock-token';
-      const user = await login(idToken);
-      
-      if (!user.displayName) {
-        router.push('/register');
-      } else {
-        router.push('/zone-b');
+      let idToken = 'mock-id-token';
+      if (confirmationResult) {
+        const result = await confirmationResult.confirm(otpString);
+        idToken = await result.user.getIdToken();
       }
+      await login(idToken);
+      router.push('/zone-b');
     } catch (err: any) {
       setError(err.message || 'Invalid OTP');
       setLoading(false);

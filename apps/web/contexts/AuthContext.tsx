@@ -39,7 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (idToken: string) => {
     setLoading(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/auth/verify-otp`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/api/auth/verify-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ idToken })
@@ -48,7 +48,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const data = await res.json();
       setToken(data.token);
       setTokenState(data.token);
-      setUser(data.user);
+      const rawUser = data.user || data;
+      setUser(rawUser ? {
+        ...rawUser,
+        name: rawUser.displayName || rawUser.name || 'User',
+        phone: rawUser.phoneNumber || rawUser.phone || '',
+        coins: rawUser.walletBalance ?? rawUser.coins ?? 0,
+      } : null);
     } finally {
       setLoading(false);
     }

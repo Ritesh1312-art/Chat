@@ -51,8 +51,7 @@ async function bootstrap() {
 
     // Init Redis (ping to verify)
     const redis = getRedisClient();
-    await redis.ping();
-    console.log('[Redis] Connected');
+    await redis.ping().catch((err) => console.warn('[Redis] Redis ping warning (configure REDIS_URL in .env if needed):', err.message));
 
     // Init Socket.io (attaches to http server)
     initSocket(server);

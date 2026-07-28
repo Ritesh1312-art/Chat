@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import express, { Router, Request, Response } from 'express';
 import { RazorpayService } from '../services/RazorpayService';
 import { getIo } from '../socket';
 
@@ -43,6 +43,3 @@ router.post('/razorpay', express.raw({ type: 'application/json' }), async (req: 
 });
 
 export const webhookRouter = router;
-
-// Need to import express for express.raw
-import express from 'express';

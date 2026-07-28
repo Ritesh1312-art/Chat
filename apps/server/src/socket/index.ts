@@ -25,8 +25,12 @@ export const initSocket = (httpServer: HttpServer) => {
         return next(new Error('Authentication error: Token missing'));
       }
 
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret') as { id: string };
-      const user = await User.findById(decoded.id);
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback_secret_key') as { sub?: string; id?: string };
+      const userId = decoded.sub || decoded.id;
+      if (!userId) {
+        return next(new Error('Authentication error: Invalid token payload'));
+      }
+      const user = await User.findById(userId);
 
       if (!user) {
         return next(new Error('Authentication error: User not found'));
