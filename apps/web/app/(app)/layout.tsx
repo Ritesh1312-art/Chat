@@ -2,16 +2,16 @@
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import Link from 'next/link';
 import BottomNav from '@/components/navigation/BottomNav';
 import { PanicProvider, PanicButton } from '@/components/moderation/PanicButton';
-
-// Mock auth hook
-const useAuth = () => ({ isAuthenticated: true, balance: 1250 });
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { isAuthenticated, balance } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  const balance = user?.coins ?? 100;
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -27,14 +27,14 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     <PanicProvider>
       <div className="min-h-screen bg-[#080810] text-[#F1F5F9] pb-[80px]">
         {/* Floating Coin Balance */}
-        <div className="fixed top-safe pt-4 right-4 z-50">
-          <div className="bg-white/10 backdrop-blur-md border border-white/10 rounded-full px-4 py-2 flex items-center gap-2 shadow-lg">
-            <div className="w-5 h-5 rounded-full bg-gradient-to-br from-yellow-300 to-yellow-600 flex items-center justify-center text-[10px] font-bold text-yellow-900 border border-yellow-200">
+        <Link href="/wallet" className="fixed top-4 right-4 z-40 transition-transform hover:scale-105 active:scale-95">
+          <div className="bg-[#080810]/80 backdrop-blur-xl border border-violet-500/30 rounded-full px-3.5 py-1.5 flex items-center gap-2 shadow-[0_0_15px_rgba(124,58,237,0.2)]">
+            <div className="w-5 h-5 rounded-full bg-gradient-to-br from-amber-300 to-yellow-600 flex items-center justify-center text-[10px] font-extrabold text-yellow-950 border border-yellow-200/50 shadow-inner">
               V
             </div>
-            <span className="font-bold font-['Space_Grotesk'] text-[#F1F5F9]">{balance}</span>
+            <span className="font-bold text-sm font-space text-white">{user?.coins ?? balance ?? 100}</span>
           </div>
-        </div>
+        </Link>
 
         {/* Page Transition Wrapper */}
         <AnimatePresence mode="wait">

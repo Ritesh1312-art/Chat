@@ -5,25 +5,6 @@ import { Camera, Edit3, Shield, Globe, Users, LogOut, Trash2, ChevronDown } from
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 
-// Mock User Data
-const MOCK_USER = {
-  name: 'Vibe King',
-  phone: '+91 98****5678',
-  avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=VibeKing',
-  memberSince: 'Jul 2023',
-  balance: 150,
-  preferences: {
-    language: 'hi',
-    gender: 'male',
-    zoneBFilterGender: 'female',
-    zoneBFilterLang: 'hi'
-  },
-  settings: {
-    nsfwEnabled: true,
-    shareStatus: true
-  }
-};
-
 const ALL_WORLD_LANGUAGES = [
   { code: 'en', name: 'English', nativeName: 'English' },
   { code: 'hi', name: 'Hindi', nativeName: 'हिन्दी' },
@@ -56,6 +37,25 @@ const ALL_WORLD_LANGUAGES = [
   { code: 'sw', name: 'Swahili', nativeName: 'Kiswahili' },
   { code: 'uk', name: 'Ukrainian', nativeName: 'Українська' }
 ];
+
+// Mock User Data
+const MOCK_USER = {
+  name: 'Vibe King',
+  phone: '+91 98****5678',
+  avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=VibeKing',
+  memberSince: 'Jul 2023',
+  balance: 150,
+  preferences: {
+    language: 'hi',
+    gender: 'male',
+    zoneBFilterGender: 'female',
+    zoneBFilterLang: 'hi'
+  },
+  settings: {
+    nsfwEnabled: true,
+    shareStatus: true
+  }
+};
 
 export default function ProfilePage() {
   const [user, setUser] = useState(MOCK_USER);
