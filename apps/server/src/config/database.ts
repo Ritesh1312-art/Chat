@@ -11,9 +11,13 @@ export async function connectDatabase() {
   mongoose.connection.on('error', (err) => console.error('[MongoDB] Error:', err));
   mongoose.connection.on('disconnected', () => console.log('[MongoDB] Disconnected'));
   
-  await mongoose.connect(uri, {
-    maxPoolSize: 10,
-    serverSelectionTimeoutMS: 5000,
-    socketTimeoutMS: 45000
-  });
+  try {
+    await mongoose.connect(uri, {
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000
+    });
+  } catch (err: any) {
+    console.warn('[MongoDB] Connection warning (check Network Access in Atlas):', err.message);
+  }
 }
