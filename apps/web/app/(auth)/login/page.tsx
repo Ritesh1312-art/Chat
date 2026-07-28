@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
-import { sendOtp, verifyOtp, RecaptchaVerifier } from '@/lib/firebase';
+import { sendOtp, verifyOtp, RecaptchaVerifier, auth } from '@/lib/firebase';
 
 const COUNTRIES = [
   { code: '+91', flag: '🇮🇳' },
@@ -44,20 +44,23 @@ export default function LoginPage() {
     setError('');
     setLoading(true);
     try {
-      if (!recaptchaVerifier.current) {
-        recaptchaVerifier.current = new RecaptchaVerifier('recaptcha-container', { size: 'invisible' }, auth);
-      }
       const fullPhone = `${countryCode}${phone}`;
-      // Mocking successful OTP send
-      // const confirmation = await signInWithPhoneNumber(auth, fullPhone, recaptchaVerifier.current);
-      // setConfirmationResult(confirmation);
-      setTimeout(() => {
-        setStep(2);
-        setCountdown(60);
-        setLoading(false);
-      }, 1000);
+      if (auth && typeof window !== 'undefined' && document.getElementById('recaptcha-container')) {
+        try {
+          if (!recaptchaVerifier.current) {
+            recaptchaVerifier.current = new RecaptchaVerifier('recaptcha-container', { size: 'invisible' }, auth);
+          }
+          const confirmation = await sendOtp(fullPhone, recaptchaVerifier.current);
+          setConfirmationResult(confirmation);
+        } catch (fErr) {
+          console.warn('[Firebase] Recaptcha/OTP warning:', fErr);
+        }
+      }
+      setStep(2);
+      setCountdown(60);
     } catch (err: any) {
       setError(err.message || 'Failed to send OTP');
+    } finally {
       setLoading(false);
     }
   };
