@@ -53,12 +53,12 @@ export default function LoginPage() {
       const fullPhone = `${countryCode}${phone}`;
       if (typeof window !== 'undefined') {
         if (!recaptchaVerifier.current) {
-          recaptchaVerifier.current = new RecaptchaVerifier('recaptcha-container', {
+          recaptchaVerifier.current = new RecaptchaVerifier(auth, 'recaptcha-container', {
             size: 'invisible',
             callback: () => {
               console.log('[Firebase] reCAPTCHA verified');
             }
-          }, auth);
+          });
         }
       }
       const confirmation = await sendOtp(fullPhone, recaptchaVerifier.current);
