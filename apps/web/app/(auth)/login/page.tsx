@@ -6,9 +6,15 @@ import { useAuth } from '@/contexts/AuthContext';
 import { sendOtp, verifyOtp, RecaptchaVerifier, auth } from '@/lib/firebase';
 
 const COUNTRIES = [
-  { code: '+91', flag: '🇮🇳' },
-  { code: '+1', flag: '🇺🇸' },
-  { code: '+44', flag: '🇬🇧' },
+  { code: '+91', flag: '🇮🇳', name: 'India' },
+  { code: '+1', flag: '🇺🇸', name: 'USA/Canada' },
+  { code: '+44', flag: '🇬🇧', name: 'UK' },
+  { code: '+61', flag: '🇦🇺', name: 'Australia' },
+  { code: '+971', flag: '🇦🇪', name: 'UAE' },
+  { code: '+49', flag: '🇩🇪', name: 'Germany' },
+  { code: '+33', flag: '🇫🇷', name: 'France' },
+  { code: '+81', flag: '🇯🇵', name: 'Japan' },
+  { code: '+55', flag: '🇧🇷', name: 'Brazil' },
 ];
 
 export default function LoginPage() {
@@ -37,7 +43,7 @@ export default function LoginPage() {
 
   const handleSendOTP = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (phone.length < 10) {
+    if (phone.length < 7) {
       setError('Please enter a valid phone number');
       return;
     }
@@ -45,21 +51,27 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const fullPhone = `${countryCode}${phone}`;
-      if (auth && typeof window !== 'undefined' && document.getElementById('recaptcha-container')) {
-        try {
-          if (!recaptchaVerifier.current) {
-            recaptchaVerifier.current = new RecaptchaVerifier('recaptcha-container', { size: 'invisible' }, auth);
-          }
-          const confirmation = await sendOtp(fullPhone, recaptchaVerifier.current);
-          setConfirmationResult(confirmation);
-        } catch (fErr) {
-          console.warn('[Firebase] Recaptcha/OTP warning:', fErr);
+      if (typeof window !== 'undefined') {
+        if (!recaptchaVerifier.current) {
+          recaptchaVerifier.current = new RecaptchaVerifier('recaptcha-container', {
+            size: 'invisible',
+            callback: () => {
+              console.log('[Firebase] reCAPTCHA verified');
+            }
+          }, auth);
         }
       }
+      const confirmation = await sendOtp(fullPhone, recaptchaVerifier.current);
+      setConfirmationResult(confirmation);
       setStep(2);
       setCountdown(60);
     } catch (err: any) {
-      setError(err.message || 'Failed to send OTP');
+      console.error('[Firebase Real SMS Error]:', err);
+      setError(err.message || 'Failed to send SMS OTP. Please check phone number format.');
+      if (recaptchaVerifier.current) {
+        try { recaptchaVerifier.current.clear(); } catch(e){}
+        recaptchaVerifier.current = null;
+      }
     } finally {
       setLoading(false);
     }
