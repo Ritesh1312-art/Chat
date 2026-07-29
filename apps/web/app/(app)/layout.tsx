@@ -30,9 +30,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <Link href="/wallet" className="fixed top-4 right-4 z-40 transition-transform hover:scale-105 active:scale-95">
           <div className="bg-[#080810]/80 backdrop-blur-xl border border-violet-500/30 rounded-full px-3.5 py-1.5 flex items-center gap-2 shadow-[0_0_15px_rgba(124,58,237,0.2)]">
             <div className="w-5 h-5 rounded-full bg-gradient-to-br from-amber-300 to-yellow-600 flex items-center justify-center text-[10px] font-extrabold text-yellow-950 border border-yellow-200/50 shadow-inner">
-              V
+              👑
             </div>
-            <span className="font-bold text-sm font-space text-white">{user?.coins ?? balance ?? 100}</span>
+            <span className="font-bold text-sm font-space text-amber-300">
+              {(user as any)?.isAdmin || (user as any)?.walletBalance >= 999999 ? '∞ Infinity' : (user?.coins ?? balance ?? 100)}
+            </span>
           </div>
         </Link>
 

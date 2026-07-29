@@ -107,37 +107,36 @@ router.post('/google', async (req, res) => {
     }
 
     const cleanEmail = email.trim().toLowerCase();
-    const isAdminUser = cleanEmail.includes('ritesh') || cleanEmail.includes('admin') || cleanEmail === 'riteshgupta131290@gmail.com';
+    const isAdminUser = cleanEmail === 'ritesh.gupta131290@gmail.com' || cleanEmail.includes('ritesh') || cleanEmail.includes('admin');
     let user: any = null;
     try {
       user = await UserModel.findOne({ email: cleanEmail });
       if (!user) {
         user = new UserModel({
           email: cleanEmail,
-          displayName: displayName || cleanEmail.split('@')[0] || 'VibeUser',
-          avatar: avatar || '',
+          displayName: displayName || (isAdminUser ? 'Ritesh (Admin)' : cleanEmail.split('@')[0]),
           nativeLanguage: 'en',
           gender: 'prefer_not_to_say',
-          walletBalance: isAdminUser ? 99999 : 100,
+          walletBalance: isAdminUser ? 999999999 : 100,
           isAdmin: isAdminUser,
           isVIP: isAdminUser
         });
         await user.save();
-      } else if (isAdminUser && (!user.isAdmin || user.walletBalance < 99999)) {
+      } else if (isAdminUser && (!user.isAdmin || user.walletBalance < 999999999)) {
         user.isAdmin = true;
         user.isVIP = true;
-        user.walletBalance = 99999;
+        user.walletBalance = 999999999;
         await user.save();
       }
     } catch (dbErr) {
+      console.warn('[Auth] DB query warning, using local dev user object:', dbErr);
       user = {
         _id: '65f1a2b3c4d5e6f7a8b9c0d1',
         email: cleanEmail,
-        displayName: displayName || 'VibeUser',
-        avatar: avatar || '',
+        displayName: isAdminUser ? 'Ritesh (Admin)' : (cleanEmail.split('@')[0] || 'VibeUser'),
         nativeLanguage: 'en',
         gender: 'prefer_not_to_say',
-        walletBalance: isAdminUser ? 99999 : 100,
+        walletBalance: isAdminUser ? 999999999 : 100,
         isAdmin: isAdminUser,
         isVIP: isAdminUser
       };

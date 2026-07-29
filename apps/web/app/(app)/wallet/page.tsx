@@ -158,16 +158,23 @@ export default function WalletPage() {
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600/20 to-cyan-600/20 border border-white/10 backdrop-blur-xl p-8 flex flex-col items-center justify-center shadow-2xl"
+        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600/20 to-cyan-600/20 border border-amber-500/30 backdrop-blur-xl p-8 flex flex-col items-center justify-center shadow-2xl"
       >
         <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-overlay pointer-events-none"></div>
-        <p className="text-white/60 uppercase tracking-widest text-sm font-medium mb-2">Current Balance</p>
+        <div className="flex items-center gap-2 mb-2">
+          <span className="text-amber-400 font-semibold text-xs tracking-widest uppercase bg-amber-500/20 border border-amber-500/30 px-3 py-0.5 rounded-full">
+            {(user as any)?.isAdmin ? '👑 ADMIN UNLIMITED VIP PASS' : 'CURRENT BALANCE'}
+          </span>
+        </div>
         <div className="flex items-baseline space-x-3">
-          <motion.h2 className="text-7xl font-space font-black text-[#F59E0B] drop-shadow-[0_0_15px_rgba(245,158,11,0.5)]">
-            {rounded}
+          <motion.h2 className="text-7xl font-space font-black text-[#F59E0B] drop-shadow-[0_0_20px_rgba(245,158,11,0.6)]">
+            {(user as any)?.isAdmin || balance >= 999999 ? '∞' : rounded}
           </motion.h2>
           <span className="text-2xl text-[#F59E0B]/80 font-bold">VibeCoins</span>
         </div>
+        {(user as any)?.isAdmin && (
+          <p className="text-amber-300/80 text-sm font-medium mt-2">Unlimited Access Granted for ritesh.gupta131290@gmail.com</p>
+        )}
         <p className="text-white/40 mt-3 font-mono">≈ ₹{(balance / 10).toFixed(2)}</p>
       </motion.div>
 
