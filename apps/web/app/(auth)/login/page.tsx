@@ -99,14 +99,15 @@ export default function LoginPage() {
         </div>
 
         {/* Direct Gmail Input Form (No OTP) */}
-        <form onSubmit={handleEmailDirectLogin} className="space-y-4">
-          <div className="relative">
+        <form onSubmit={handleEmailDirectLogin} className="space-y-4" suppressHydrationWarning>
+          <div className="relative" suppressHydrationWarning>
             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#64748B]">✉️</span>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your Gmail address"
+              suppressHydrationWarning
               className="w-full h-12 bg-white/5 border border-white/10 rounded-xl pl-11 pr-4 text-[#F1F5F9] placeholder-[#64748B] focus:outline-none focus:border-[#06B6D4] transition-colors"
             />
           </div>
