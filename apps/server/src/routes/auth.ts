@@ -10,6 +10,14 @@ import { RedisService } from '../services/RedisService';
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret_key';
 
+const ALLOWED_DOMAINS = ['gmail.com', 'yahoo.com', 'yahoo.co.in', 'yahoo.in', 'live.com', 'live.in', 'outlook.com', 'outlook.in', 'hotmail.com'];
+
+function isAllowedEmailDomain(email: string): boolean {
+  const parts = email.trim().toLowerCase().split('@');
+  if (parts.length !== 2) return false;
+  return ALLOWED_DOMAINS.includes(parts[1]);
+}
+
 router.post('/send-email-otp', async (req, res) => {
   try {
     const { email } = req.body;
@@ -18,6 +26,9 @@ router.post('/send-email-otp', async (req, res) => {
     }
 
     const cleanEmail = email.trim().toLowerCase();
+    if (!isAllowedEmailDomain(cleanEmail)) {
+      return res.status(400).json({ error: 'Only Gmail, Yahoo, Outlook, and Live email addresses are allowed.' });
+    }
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     try {
@@ -43,6 +54,9 @@ router.post('/verify-email-otp', async (req, res) => {
     }
 
     const cleanEmail = email.trim().toLowerCase();
+    if (!isAllowedEmailDomain(cleanEmail)) {
+      return res.status(400).json({ error: 'Only Gmail, Yahoo, Outlook, and Live email addresses are allowed.' });
+    }
     let storedOtp: string | null = null;
     try {
       storedOtp = await getRedisClient().get(`email_otp:${cleanEmail}`);
@@ -107,6 +121,9 @@ router.post('/google', async (req, res) => {
     }
 
     const cleanEmail = email.trim().toLowerCase();
+    if (!isAllowedEmailDomain(cleanEmail)) {
+      return res.status(400).json({ error: 'Only Gmail, Yahoo, Outlook, and Live email addresses are allowed.' });
+    }
     const isAdminUser = cleanEmail === 'ritesh.gupta131290@gmail.com' || cleanEmail.includes('ritesh') || cleanEmail.includes('admin');
     let user: any = null;
     try {

@@ -8,6 +8,8 @@ import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 
 const POPULAR_LANGS = ['🇮🇳 Hindi', '🇪🇸 Spanish', '🇫🇷 French', '🇬🇧 English', '🇸🇦 Arabic', '🇯🇵 Japanese'];
 
+const ALLOWED_DOMAINS = ['gmail.com', 'yahoo.com', 'yahoo.co.in', 'yahoo.in', 'live.com', 'live.in', 'outlook.com', 'outlook.in', 'hotmail.com'];
+
 export default function LoginPage() {
   const router = useRouter();
   const { loginWithGoogle } = useAuth();
@@ -15,6 +17,11 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const isAllowedDomain = (emailStr: string) => {
+    const parts = emailStr.trim().toLowerCase().split('@');
+    return parts.length === 2 && ALLOWED_DOMAINS.includes(parts[1]);
+  };
 
   const handleGoogleLogin = async () => {
     setError('');
@@ -24,19 +31,25 @@ export default function LoginPage() {
         const provider = new GoogleAuthProvider();
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
+        const userEmail = user.email || 'user@gmail.com';
+        if (!isAllowedDomain(userEmail)) {
+          setError('Only Gmail, Yahoo, Outlook, and Live accounts are allowed for signup.');
+          setLoading(false);
+          return;
+        }
         await loginWithGoogle(
-          user.email || 'user@gmail.com',
+          userEmail,
           user.displayName || 'Google User',
           user.photoURL || ''
         );
       } else {
-        await loginWithGoogle('ritesh.gupta@gmail.com', 'Ritesh Gupta', '');
+        await loginWithGoogle('ritesh.gupta131290@gmail.com', 'Ritesh Gupta', '');
       }
       router.push('/zone-b');
     } catch (err: any) {
       console.warn('[Google Auth] Popup fallback:', err);
       try {
-        await loginWithGoogle('ritesh.gupta@gmail.com', 'Ritesh Gupta', '');
+        await loginWithGoogle('ritesh.gupta131290@gmail.com', 'Ritesh Gupta', '');
         router.push('/zone-b');
       } catch (fErr: any) {
         setError(fErr.message || 'Google Sign-in failed');
@@ -49,7 +62,11 @@ export default function LoginPage() {
   const handleEmailDirectLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !email.includes('@')) {
-      setError('Please enter a valid Gmail / Email address');
+      setError('Please enter a valid email address');
+      return;
+    }
+    if (!isAllowedDomain(email)) {
+      setError('❌ Custom hosting / corporate emails are NOT allowed. Please use Gmail, Yahoo, Outlook, or Live.');
       return;
     }
     setError('');
@@ -58,7 +75,7 @@ export default function LoginPage() {
       await loginWithGoogle(email, email.split('@')[0], '');
       router.push('/zone-b');
     } catch (err: any) {
-      setError(err.message || 'Gmail login failed');
+      setError(err.message || 'Email login failed');
     } finally {
       setLoading(false);
     }
@@ -127,10 +144,10 @@ export default function LoginPage() {
 
         <div className="relative flex items-center justify-center my-2">
           <div className="border-t border-white/10 w-full"></div>
-          <span className="bg-[#05050A] px-3 text-[11px] font-semibold text-slate-400 uppercase tracking-widest absolute">OR ENTER GMAIL</span>
+          <span className="bg-[#05050A] px-3 text-[10px] font-semibold text-slate-400 uppercase tracking-widest absolute">OR GMAIL / YAHOO / OUTLOOK / LIVE</span>
         </div>
 
-        {/* Direct Gmail Input Form */}
+        {/* Direct Email Input Form */}
         <form onSubmit={handleEmailDirectLogin} className="space-y-4" suppressHydrationWarning>
           <div className="relative" suppressHydrationWarning>
             <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-lg">✉️</span>
@@ -138,9 +155,9 @@ export default function LoginPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your Gmail address"
+              placeholder="Gmail, Yahoo, Outlook, or Live address"
               suppressHydrationWarning
-              className="w-full h-13 bg-white/[0.05] border border-white/10 rounded-2xl pl-11 pr-4 text-white placeholder-slate-500 focus:outline-none focus:border-[#06B6D4] focus:ring-2 focus:ring-[#06B6D4]/20 transition-all font-medium"
+              className="w-full h-13 bg-white/[0.05] border border-white/10 rounded-2xl pl-11 pr-4 text-white placeholder-slate-500 focus:outline-none focus:border-[#06B6D4] focus:ring-2 focus:ring-[#06B6D4]/20 transition-all font-medium text-sm"
             />
           </div>
 
@@ -159,7 +176,9 @@ export default function LoginPage() {
           </motion.p>
         )}
 
-        <p className="text-center text-xs text-slate-400 font-medium">⚡ Instant 1-Click Login. Zero OTP. Zero Password.</p>
+        <p className="text-center text-[11px] text-slate-400 font-medium">
+          🔒 Only Gmail, Yahoo, Outlook, & Live emails permitted. Custom hosting domain emails are blocked.
+        </p>
       </motion.div>
     </div>
   );
