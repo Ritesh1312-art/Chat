@@ -26,9 +26,9 @@ router.get('/search', verifyToken, async (req, res) => {
 
 router.get('/blocklist', verifyToken, async (req, res) => {
   try {
-    const user = await UserModel.findById(req.userId).populate('blocklist', 'displayName avatar');
+    const user = await UserModel.findById(req.userId).populate('blockedUsers', 'displayName avatar');
     if (!user) return res.status(404).json({ error: 'User not found' });
-    res.json(user.blocklist);
+    res.json(user.blockedUsers || []);
   } catch (error) {
     res.status(500).json({ error: 'Server error' });
   }

@@ -6,6 +6,7 @@ import { disconnectSocket } from '@/lib/socket';
 interface AuthContextProps {
   user: IUser | null;
   token: string | null;
+  isAuthenticated: boolean;
   loading: boolean;
   login: (idToken: string) => Promise<void>;
   sendEmailOTP: (email: string) => Promise<void>;
@@ -137,8 +138,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(prev => prev ? { ...prev, ...partial } : null);
   };
 
+  const isAuthenticated = !!user || !!token;
+
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, sendEmailOTP, loginWithEmailOTP, loginWithGoogle, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, token, isAuthenticated, loading, login, sendEmailOTP, loginWithEmailOTP, loginWithGoogle, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
