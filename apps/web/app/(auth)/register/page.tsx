@@ -2,6 +2,8 @@
 import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { useAuth } from '@/contexts/AuthContext';
+import { getToken } from '@/lib/auth';
 
 const LANGUAGES = [
   { code: 'en', name: 'English', flag: '🇬🇧' },
@@ -40,6 +42,7 @@ const GENDERS = ['Male', 'Female', 'Other', 'Prefer not to say'];
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { updateUser } = useAuth();
   
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState('');
@@ -70,8 +73,22 @@ export default function RegisterPage() {
     setError('');
     
     try {
-      // Mock PATCH /auth/profile
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const token = getToken();
+      if (token) {
+        await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/api/auth/profile`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            displayName,
+            nativeLanguage: language,
+            gender
+          })
+        });
+      }
+      updateUser({ displayName, nativeLanguage: language, gender: gender as any });
       router.push('/zone-b');
     } catch (err: any) {
       setError(err.message || 'Failed to update profile');

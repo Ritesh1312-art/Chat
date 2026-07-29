@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Loader2, CheckCircle2, Coins } from 'lucide-react';
+import { getToken } from '@/lib/auth';
 
 type Plan = { id: string; name: string; coins: number; price: number; bonus?: number };
 
@@ -36,15 +37,31 @@ export default function PaymentModal({ plan, onSuccess, onClose }: PaymentModalP
     setErrorMsg('');
 
     try {
-      // 1. Create order on backend (Mocked for now)
-      // const res = await fetch('/api/wallet/order', { method: 'POST', body: JSON.stringify({ planId: plan.id }) });
-      // const order = await res.json();
-      
-      // MOCK ORDER
-      const order = { id: 'order_' + Date.now(), amount: plan.price * 100, currency: 'INR' };
+      const token = getToken();
+      let order: any = null;
+
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/api/wallet/order`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {})
+          },
+          body: JSON.stringify({ planId: plan.id })
+        });
+        if (res.ok) {
+          order = await res.json();
+        }
+      } catch (e) {
+        console.warn('[Razorpay] Order API fallback:', e);
+      }
+
+      if (!order || !order.id) {
+        order = { id: 'order_' + Date.now(), amount: plan.price * 100, currency: 'INR' };
+      }
 
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_mock', // Enter the Key ID generated from the Dashboard
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_TIzWrtxCNfmOku', // Enter the Key ID generated from the Dashboard
         amount: order.amount,
         currency: order.currency,
         name: 'VibeRoom',

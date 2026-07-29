@@ -3,17 +3,19 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronLeft, Phone, MoreVertical, Send, Mic, Smile, Lock } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import MessageBubble from '../../../../components/chat/MessageBubble';
-
-const MOCK_MESSAGES = [
-  { id: '1', content: 'Hola! How are you?', isTranslated: true, sourceLang: 'Spanish 🇪🇸', targetLang: 'English 🇬🇧', sender: 'peer', timestamp: '10:30 AM' },
-  { id: '2', content: 'Hi there! I am doing well, thanks.', sender: 'self', timestamp: '10:32 AM' },
-];
+import { useAuth } from '@/contexts/AuthContext';
+import { getToken } from '@/lib/auth';
+import { getSocket } from '@/lib/socket';
 
 export default function ChatPage() {
   const router = useRouter();
-  const [messages, setMessages] = useState(MOCK_MESSAGES);
+  const params = useParams();
+  const chatId = params?.chatId as string;
+  const { user } = useAuth();
+
+  const [messages, setMessages] = useState<any[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [callConsent, setCallConsent] = useState<'NONE' | 'PENDING' | 'GRANTED'>('NONE');
@@ -24,40 +26,88 @@ export default function ChatPage() {
   };
 
   useEffect(() => {
+    const fetchChatDetails = async () => {
+      try {
+        const token = getToken();
+        if (!token || !chatId) return;
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/api/chats/${chatId}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.messages) {
+            setMessages(data.messages.map((m: any) => ({
+              id: m._id || m.id,
+              content: m.content,
+              sender: m.senderId === user?.id ? 'self' : 'peer',
+              timestamp: new Date(m.timestamp || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            })));
+          }
+        }
+      } catch (err) {
+        console.warn('[ChatPage] Fetch chat error:', err);
+      }
+    };
+    fetchChatDetails();
+  }, [chatId, user]);
+
+  useEffect(() => {
     scrollToBottom();
   }, [messages, isTyping]);
+
+  useEffect(() => {
+    const token = getToken();
+    const socket = getSocket(token || '');
+    if (!socket || !chatId) return;
+
+    socket.emit('join-room', { roomId: chatId });
+
+    const handleMessageReceived = (msg: any) => {
+      const myUserId = (user as any)?._id || (user as any)?.id;
+      setMessages(prev => [...prev, {
+        id: msg.id || Date.now().toString(),
+        content: msg.translatedText || msg.content || msg.text,
+        sender: msg.senderId === myUserId ? 'self' : 'peer',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      }]);
+    };
+
+    socket.on('receive-message', handleMessageReceived);
+
+    return () => {
+      socket.off('receive-message', handleMessageReceived);
+    };
+  }, [chatId, user]);
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim()) return;
     
+    const textToSend = inputValue.trim();
+    setInputValue('');
+
     const newMsg = {
       id: Date.now().toString(),
-      content: inputValue,
+      content: textToSend,
       sender: 'self',
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
-    
-    setMessages([...messages, newMsg]);
-    setInputValue('');
-    
-    setIsTyping(true);
-    setTimeout(() => {
-      setIsTyping(false);
-      setMessages(prev => [...prev, {
-        id: (Date.now() + 1).toString(),
-        content: 'I understand.',
-        sender: 'peer',
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      }]);
-    }, 2000);
+    setMessages(prev => [...prev, newMsg]);
+
+    const token = getToken();
+    const socket = getSocket(token || '');
+    if (socket) {
+      socket.emit('send-message', {
+        roomId: chatId,
+        text: textToSend,
+        senderId: (user as any)?._id || (user as any)?.id,
+        targetLanguage: 'en'
+      });
+    }
   };
 
   const handleRequestCall = () => {
-    setCallConsent('PENDING');
-    setTimeout(() => {
-      setCallConsent('GRANTED');
-    }, 2500);
+    setCallConsent('GRANTED');
   };
 
   return (

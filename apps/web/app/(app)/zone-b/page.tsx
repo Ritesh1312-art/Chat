@@ -1,22 +1,42 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Search, Filter, Plus, Lock } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
+import { getToken } from '@/lib/auth';
 
 const FILTERS = ['All', 'Unread', 'Male', 'Female', 'Hindi', 'English', 'Spanish'];
 
-const MOCK_CHATS = [
-  { id: '1', name: 'Priya Sharma', avatar: '👩🏽', nativeLanguage: '🇮🇳', lastMessage: 'नमस्ते! How are you?', time: '2m ago', unread: 2, online: true, isLocked: false },
-  { id: '2', name: 'Carlos R', avatar: '👨🏽', nativeLanguage: '🇪🇸', lastMessage: 'That sounds great, talk to you later.', time: '1h ago', unread: 0, online: false, isLocked: true },
-  { id: '3', name: 'Sarah Lee', avatar: '👩🏻', nativeLanguage: '🇺🇸', lastMessage: 'Haha yes, exactly!', time: 'Yesterday', unread: 0, online: false, isLocked: false },
-];
-
 export default function ZoneBPage() {
   const [activeFilter, setActiveFilter] = useState('All');
+  const [chats, setChats] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    const fetchChats = async () => {
+      try {
+        const token = getToken();
+        if (!token) return;
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/api/chats`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setChats(data);
+        }
+      } catch (err) {
+        console.warn('[ZoneB] Fetch chats error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchChats();
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#080810] text-slate-100 font-inter pb-20 md:pb-0 relative">
@@ -53,57 +73,47 @@ export default function ZoneBPage() {
       </header>
 
       <main className="p-4">
-        {MOCK_CHATS.length > 0 ? (
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <div className="w-8 h-8 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : chats.length > 0 ? (
           <div className="flex flex-col gap-2">
-            {MOCK_CHATS.map((chat) => (
-              <Link key={chat.id} href={`/zone-b/${chat.id}`}>
-                <motion.div 
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="flex items-center gap-4 p-3 rounded-2xl bg-white/5 hover:bg-white/10 border border-transparent hover:border-white/10 transition-all cursor-pointer relative"
-                >
-                  <div className="relative w-14 h-14 rounded-full bg-slate-800 flex items-center justify-center text-2xl shrink-0">
-                    {chat.avatar}
-                    {chat.online && (
-                      <span className="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-[#080810]" />
-                    )}
-                  </div>
-
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-baseline mb-1">
-                      <h3 className="font-semibold text-slate-200 truncate flex items-center gap-2">
-                        {chat.name} <span>{chat.nativeLanguage}</span>
-                      </h3>
-                      <span className={`text-xs whitespace-nowrap ml-2 ${chat.unread > 0 ? 'text-violet-400 font-semibold' : 'text-slate-500'}`}>
-                        {chat.time}
-                      </span>
+            {chats.map((chat) => {
+              const myId = (user as any)?._id || (user as any)?.id;
+              const other = chat.participants?.find((p: any) => p._id !== myId) || chat.participants?.[0] || {};
+              const lastMsg = chat.messages?.[0]?.content || 'Start a conversation';
+              return (
+                <Link key={chat._id || chat.id} href={`/zone-b/${chat._id || chat.id}`}>
+                  <motion.div 
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="flex items-center gap-4 p-3 rounded-2xl bg-white/5 hover:bg-white/10 border border-transparent hover:border-white/10 transition-all cursor-pointer relative"
+                  >
+                    <div className="relative w-14 h-14 rounded-full bg-slate-800 flex items-center justify-center text-2xl shrink-0 overflow-hidden">
+                      {other.avatar ? (
+                        <img src={other.avatar} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        <span>👤</span>
+                      )}
                     </div>
-                    <p className={`text-sm truncate ${chat.unread > 0 ? 'text-slate-300 font-medium' : 'text-slate-500'}`}>
-                      {chat.lastMessage}
-                    </p>
-                  </div>
-
-                  <div className="flex flex-col items-end gap-1 shrink-0">
-                    {chat.unread > 0 && (
-                      <span className="w-5 h-5 rounded-full bg-violet-600 flex items-center justify-center text-[10px] font-bold text-white shadow-[0_0_10px_rgba(124,58,237,0.5)]">
-                        {chat.unread}
-                      </span>
-                    )}
-                    {chat.isLocked && (
-                      <Lock className="w-3.5 h-3.5 text-yellow-500" />
-                    )}
-                  </div>
-                </motion.div>
-              </Link>
-            ))}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-baseline mb-1">
+                        <h3 className="font-semibold text-slate-100 truncate">{other.displayName || 'VibeUser'}</h3>
+                      </div>
+                      <p className="text-sm text-slate-400 truncate">{lastMsg}</p>
+                    </div>
+                  </motion.div>
+                </Link>
+              );
+            })}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="w-24 h-24 rounded-full bg-white/5 flex items-center justify-center mb-4">
-              <Search className="w-10 h-10 text-slate-500" />
-            </div>
-            <h3 className="text-xl font-bold text-slate-300 mb-2">No chats yet</h3>
-            <p className="text-slate-500 max-w-xs">Go to Explore to find someone to chat with!</p>
+          <div className="text-center py-16 space-y-4">
+            <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto text-3xl">💬</div>
+            <h3 className="text-lg font-semibold text-slate-200">No active chats yet</h3>
+            <p className="text-slate-400 text-sm max-w-xs mx-auto">Connect with strangers in Zone A to unlock DMs in Zone B!</p>
+            <Link href="/zone-a" className="inline-block px-6 py-2.5 bg-gradient-to-r from-violet-600 to-cyan-500 rounded-full font-medium text-white shadow-lg">Go to Zone A</Link>
           </div>
         )}
       </main>

@@ -1,7 +1,9 @@
 export interface IUser {
   _id: string;
+  id?: string;
   phoneNumber?: string;
   phone?: string;
+  email?: string;
   displayName?: string;
   name?: string;
   avatar?: string;
@@ -9,6 +11,8 @@ export interface IUser {
   coins?: number;
   nativeLanguage?: string;
   gender?: string;
+  genderFilter?: string;
+  languageFilter?: string;
   isBanned?: boolean;
 }
 

@@ -5,6 +5,7 @@ import { motion, useAnimation, useMotionValue, useTransform, animate } from 'fra
 import { Coins, Tv, ShoppingCart, ArrowRight, Zap, Star } from 'lucide-react';
 import PaymentModal from '@/components/wallet/PaymentModal';
 import AdWatchTimer from '@/components/wallet/AdWatchTimer';
+import { getToken } from '@/lib/auth';
 
 // Types
 type Plan = { id: string; name: string; coins: number; price: number; bonus?: number; popular?: boolean };
@@ -23,6 +24,7 @@ export default function WalletPage() {
   const [showAdTimer, setShowAdTimer] = useState(false);
   const [adCooldown, setAdCooldown] = useState(0);
   const [adsWatchedToday, setAdsWatchedToday] = useState(0);
+  const [adToken, setAdToken] = useState<string | null>(null);
   
   // Animation for coin balance
   const count = useMotionValue(0);
@@ -31,13 +33,19 @@ export default function WalletPage() {
   useEffect(() => {
     // Fetch initial balance and history
     const fetchWallet = async () => {
-      // MOCK: Replace with actual API call
-      setBalance(150);
-      setHistory([
-        { id: 't1', type: 'credit', amount: 100, description: 'Razorpay +100 coins', date: new Date().toISOString(), source: 'razorpay' },
-        { id: 't2', type: 'credit', amount: 10, description: 'Ad Reward', date: new Date(Date.now() - 86400000).toISOString(), source: 'ad' }
-      ]);
-      
+      try {
+        const token = getToken();
+        if (!token) return;
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/api/wallet/balance`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.balance !== undefined) setBalance(data.balance);
+        }
+      } catch (e) {
+        console.warn('[Wallet] Balance fetch error:', e);
+      }
       const storedLimit = localStorage.getItem('vibe_ads_watched');
       if (storedLimit) {
         setAdsWatchedToday(parseInt(storedLimit, 10));
@@ -72,7 +80,18 @@ export default function WalletPage() {
 
   const handleAdWatchStart = async () => {
     if (adsWatchedToday >= 5) return;
-    // Mock get token
+    try {
+      const token = getToken();
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/api/wallet/ad-token`, {
+        headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setAdToken(data.token);
+      }
+    } catch (e) {
+      console.warn('[Wallet] Ad token error:', e);
+    }
     setShowAdTimer(true);
   };
 
@@ -84,9 +103,27 @@ export default function WalletPage() {
       localStorage.setItem('vibe_ads_watched', newVal.toString());
       return newVal;
     });
-    
-    // MOCK: Call POST /wallet/ad-reward { token }
-    setBalance(prev => prev + 10);
+
+    try {
+      const token = getToken();
+      if (adToken) {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/api/wallet/ad-reward`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {})
+          },
+          body: JSON.stringify({ token: adToken })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.newBalance !== undefined) setBalance(data.newBalance);
+        }
+      }
+    } catch (e) {
+      console.warn('[Wallet] Ad reward error:', e);
+    }
+
     setHistory(prev => [{
       id: Date.now().toString(),
       type: 'credit',

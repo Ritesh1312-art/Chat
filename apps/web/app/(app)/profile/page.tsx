@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 import { Camera, Edit3, Shield, Globe, Users, LogOut, Trash2, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
@@ -58,7 +60,27 @@ const MOCK_USER = {
 };
 
 export default function ProfilePage() {
-  const [user, setUser] = useState(MOCK_USER);
+  const router = useRouter();
+  const { user: authUser, logout, updateUser, token } = useAuth();
+  
+  const user = {
+    name: authUser?.name || authUser?.displayName || 'VibeUser',
+    phone: authUser?.phone || authUser?.phoneNumber || authUser?.email || 'Connected',
+    avatar: authUser?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=VibeUser',
+    memberSince: '2026',
+    balance: authUser?.coins ?? authUser?.walletBalance ?? 100,
+    preferences: {
+      language: authUser?.nativeLanguage || 'en',
+      gender: authUser?.gender || 'prefer_not_to_say',
+      zoneBFilterGender: authUser?.genderFilter || 'any',
+      zoneBFilterLang: authUser?.languageFilter || 'any'
+    },
+    settings: {
+      nsfwEnabled: true,
+      shareStatus: true
+    }
+  };
+
   const [expandedSection, setExpandedSection] = useState<string | null>('preferences');
 
   const toggleSection = (section: string) => {
@@ -66,9 +88,8 @@ export default function ProfilePage() {
   };
 
   const handleLogout = () => {
-    // MOCK: Call auth context logout
-    alert('Logging out...');
-    window.location.href = '/login';
+    logout();
+    router.push('/login');
   };
 
   return (
