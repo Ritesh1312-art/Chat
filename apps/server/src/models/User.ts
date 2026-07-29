@@ -2,6 +2,7 @@ import mongoose, { Document, Schema, Types } from 'mongoose';
 
 export interface IUserDocument extends Document {
   phoneNumber?: string;
+  email?: string;
   displayName: string;
   avatar: string;
   nativeLanguage: string;
@@ -23,6 +24,7 @@ export interface IUserDocument extends Document {
 const UserSchema = new Schema<IUserDocument>(
   {
     phoneNumber: { type: String, unique: true, sparse: true },
+    email: { type: String, unique: true, sparse: true },
     displayName: { type: String, required: true },
     avatar: { type: String, default: '' },
     nativeLanguage: { type: String, default: 'en' },

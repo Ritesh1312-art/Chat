@@ -8,6 +8,9 @@ interface AuthContextProps {
   token: string | null;
   loading: boolean;
   login: (idToken: string) => Promise<void>;
+  sendEmailOTP: (email: string) => Promise<void>;
+  loginWithEmailOTP: (email: string, otp: string) => Promise<void>;
+  loginWithGoogle: (email: string, displayName?: string, avatar?: string) => Promise<void>;
   logout: () => void;
   updateUser: (partial: Partial<IUser>) => void;
 }
@@ -35,6 +38,69 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
     initAuth();
   }, []);
+
+  const sendEmailOTP = async (email: string) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/api/auth/send-email-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || 'Failed to send OTP to email');
+    }
+  };
+
+  const loginWithEmailOTP = async (email: string, otp: string) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/api/auth/verify-email-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp })
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Invalid OTP');
+      }
+      const data = await res.json();
+      setToken(data.token);
+      setTokenState(data.token);
+      const rawUser = data.user || data;
+      setUser(rawUser ? {
+        ...rawUser,
+        name: rawUser.displayName || rawUser.name || 'User',
+        phone: rawUser.phoneNumber || rawUser.phone || '',
+        coins: rawUser.walletBalance ?? rawUser.coins ?? 100,
+      } : null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loginWithGoogle = async (email: string, displayName?: string, avatar?: string) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/api/auth/google`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, displayName, avatar })
+      });
+      if (!res.ok) throw new Error('Google login failed');
+      const data = await res.json();
+      setToken(data.token);
+      setTokenState(data.token);
+      const rawUser = data.user || data;
+      setUser(rawUser ? {
+        ...rawUser,
+        name: rawUser.displayName || rawUser.name || 'User',
+        phone: rawUser.phoneNumber || rawUser.phone || '',
+        coins: rawUser.walletBalance ?? rawUser.coins ?? 100,
+      } : null);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const login = async (idToken: string) => {
     setLoading(true);
@@ -72,7 +138,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, token, loading, login, sendEmailOTP, loginWithEmailOTP, loginWithGoogle, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
