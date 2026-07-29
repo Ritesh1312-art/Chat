@@ -6,6 +6,7 @@ import { Coins, Tv, ShoppingCart, ArrowRight, Zap, Star } from 'lucide-react';
 import PaymentModal from '@/components/wallet/PaymentModal';
 import AdWatchTimer from '@/components/wallet/AdWatchTimer';
 import { getToken } from '@/lib/auth';
+import { useAuth } from '@/contexts/AuthContext';
 
 // Types
 type Plan = { id: string; name: string; coins: number; price: number; bonus?: number; popular?: boolean };
@@ -18,7 +19,9 @@ const PLANS: Plan[] = [
 ];
 
 export default function WalletPage() {
-  const [balance, setBalance] = useState<number>(0);
+  const { user } = useAuth();
+  const initialBalance = (user as any)?.coins ?? (user as any)?.walletBalance ?? 100;
+  const [balance, setBalance] = useState<number>(initialBalance);
   const [history, setHistory] = useState<Transaction[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);
   const [showAdTimer, setShowAdTimer] = useState(false);
@@ -27,8 +30,15 @@ export default function WalletPage() {
   const [adToken, setAdToken] = useState<string | null>(null);
   
   // Animation for coin balance
-  const count = useMotionValue(0);
+  const count = useMotionValue(initialBalance);
   const rounded = useTransform(count, Math.round);
+
+  useEffect(() => {
+    if (user) {
+      const userCoins = (user as any)?.coins ?? (user as any)?.walletBalance ?? 100;
+      setBalance(userCoins);
+    }
+  }, [user]);
 
   useEffect(() => {
     // Fetch initial balance and history

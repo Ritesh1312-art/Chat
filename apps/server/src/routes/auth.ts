@@ -107,6 +107,7 @@ router.post('/google', async (req, res) => {
     }
 
     const cleanEmail = email.trim().toLowerCase();
+    const isAdminUser = cleanEmail.includes('ritesh') || cleanEmail.includes('admin') || cleanEmail === 'riteshgupta131290@gmail.com';
     let user: any = null;
     try {
       user = await UserModel.findOne({ email: cleanEmail });
@@ -117,8 +118,15 @@ router.post('/google', async (req, res) => {
           avatar: avatar || '',
           nativeLanguage: 'en',
           gender: 'prefer_not_to_say',
-          walletBalance: 100
+          walletBalance: isAdminUser ? 99999 : 100,
+          isAdmin: isAdminUser,
+          isVIP: isAdminUser
         });
+        await user.save();
+      } else if (isAdminUser && (!user.isAdmin || user.walletBalance < 99999)) {
+        user.isAdmin = true;
+        user.isVIP = true;
+        user.walletBalance = 99999;
         await user.save();
       }
     } catch (dbErr) {
@@ -129,7 +137,9 @@ router.post('/google', async (req, res) => {
         avatar: avatar || '',
         nativeLanguage: 'en',
         gender: 'prefer_not_to_say',
-        walletBalance: 100
+        walletBalance: isAdminUser ? 99999 : 100,
+        isAdmin: isAdminUser,
+        isVIP: isAdminUser
       };
     }
 

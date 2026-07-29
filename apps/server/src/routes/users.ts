@@ -6,6 +6,26 @@ import mongoose from 'mongoose';
 
 const router = Router();
 
+router.get('/explore', async (req, res) => {
+  try {
+    let users = await UserModel.find({ isBanned: false })
+      .select('displayName avatar nativeLanguage gender interests isVIP')
+      .limit(30);
+
+    if (!users || users.length === 0) {
+      users = [
+        { _id: '65f1a2b3c4d5e6f7a8b9c0d1', displayName: 'Priya Sharma', nativeLanguage: 'hi', gender: 'female', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Priya', isVIP: true } as any,
+        { _id: '65f1a2b3c4d5e6f7a8b9c0d2', displayName: 'Carlos Rodriguez', nativeLanguage: 'es', gender: 'male', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Carlos', isVIP: false } as any,
+        { _id: '65f1a2b3c4d5e6f7a8b9c0d3', displayName: 'Aisha Al-Mansoor', nativeLanguage: 'ar', gender: 'female', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Aisha', isVIP: true } as any,
+        { _id: '65f1a2b3c4d5e6f7a8b9c0d4', displayName: 'Yuki Tanaka', nativeLanguage: 'ja', gender: 'female', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Yuki', isVIP: false } as any
+      ];
+    }
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 router.get('/search', verifyToken, async (req, res) => {
   try {
     const { gender, language, limit = 20 } = req.query;

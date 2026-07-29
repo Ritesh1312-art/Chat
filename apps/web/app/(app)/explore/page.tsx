@@ -1,23 +1,37 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Filter, ChevronDown, MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-
-const MOCK_USERS = [
-  { id: '1', name: 'Aisha', avatar: '👩🏾', language: 'Hindi', flag: '🇮🇳', gender: 'Female' },
-  { id: '2', name: 'James', avatar: '👨🏼', language: 'English', flag: '🇬🇧', gender: 'Male' },
-  { id: '3', name: 'Yuki', avatar: '👩🏻', language: 'Japanese', flag: '🇯🇵', gender: 'Female' },
-  { id: '4', name: 'Carlos', avatar: '👨🏽', language: 'Spanish', flag: '🇪🇸', gender: 'Male' },
-  { id: '5', name: 'Amelie', avatar: '👩🏼', language: 'French', flag: '🇫🇷', gender: 'Female' },
-  { id: '6', name: 'Chen', avatar: '👨🏻', language: 'Mandarin', flag: '🇨🇳', gender: 'Male' },
-];
+import { getToken } from '@/lib/auth';
 
 export default function ExplorePage() {
   const router = useRouter();
   const [showFilters, setShowFilters] = useState(false);
   const [gender, setGender] = useState('Any');
+  const [users, setUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const token = getToken();
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/api/users/explore`, {
+          headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setUsers(data);
+        }
+      } catch (err) {
+        console.warn('[Explore] Fetch error:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchUsers();
+  }, []);
 
   const handleStartChat = (userId: string) => {
     router.push(`/zone-b/${userId}`);
@@ -85,34 +99,49 @@ export default function ExplorePage() {
       </header>
 
       <main className="p-6">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {MOCK_USERS.map((user, i) => (
-            <motion.div 
-              key={user.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
-              className="bg-white/5 border border-white/10 rounded-3xl p-5 flex flex-col items-center text-center hover:bg-white/10 transition-colors group"
-            >
-              <div className="w-20 h-20 rounded-full bg-slate-800 text-4xl flex items-center justify-center mb-3 shadow-inner">
-                {user.avatar}
-              </div>
-              <h3 className="font-bold text-slate-200 text-lg mb-1">{user.name}</h3>
-              <p className="text-xs text-slate-400 mb-3 flex items-center gap-1">
-                {user.flag} {user.language}
-              </p>
-              
-              <div className="mt-auto pt-2 w-full">
-                <button 
-                  onClick={() => handleStartChat(user.id)}
-                  className="w-full py-2 rounded-xl bg-white/10 text-white text-sm font-semibold group-hover:bg-violet-600 transition-colors flex items-center justify-center gap-2"
-                >
-                  <MessageCircle className="w-4 h-4" /> Chat
-                </button>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+        {loading ? (
+          <div className="flex justify-center py-16">
+            <div className="w-8 h-8 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {users.map((u, i) => (
+              <motion.div 
+                key={u._id || u.id || i}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05 }}
+                className="bg-white/5 border border-white/10 rounded-3xl p-5 flex flex-col items-center text-center hover:bg-white/10 transition-colors group relative overflow-hidden"
+              >
+                {u.isVIP && (
+                  <span className="absolute top-3 right-3 text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full font-semibold">
+                    VIP
+                  </span>
+                )}
+                <div className="w-20 h-20 rounded-full bg-slate-800 flex items-center justify-center mb-3 overflow-hidden">
+                  {u.avatar ? (
+                    <img src={u.avatar} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-3xl">👤</span>
+                  )}
+                </div>
+                <h3 className="font-bold text-slate-200 text-lg mb-1 truncate w-full">{u.displayName || u.name}</h3>
+                <p className="text-xs text-slate-400 mb-3 flex items-center gap-1">
+                  🌐 {u.nativeLanguage?.toUpperCase() || 'EN'}
+                </p>
+                
+                <div className="mt-auto pt-2 w-full">
+                  <button 
+                    onClick={() => handleStartChat(u._id || u.id)}
+                    className="w-full py-2 rounded-xl bg-white/10 text-white text-sm font-semibold group-hover:bg-violet-600 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <MessageCircle className="w-4 h-4" /> Chat
+                  </button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
         
         <div className="mt-8 text-center">
           <button className="px-6 py-2.5 rounded-full border border-white/20 text-slate-300 text-sm font-medium hover:bg-white/5 transition-colors">

@@ -8,6 +8,8 @@ export interface IUserDocument extends Document {
   nativeLanguage: string;
   gender: 'male' | 'female' | 'other' | 'prefer_not_to_say';
   walletBalance: number;
+  isAdmin: boolean;
+  isVIP: boolean;
   promoStrikes: number;
   nsfwStrikes: number;
   isBanned: boolean;
@@ -34,6 +36,8 @@ const UserSchema = new Schema<IUserDocument>(
       default: 'prefer_not_to_say',
     },
     walletBalance: { type: Number, default: 0, min: 0 },
+    isAdmin: { type: Boolean, default: false },
+    isVIP: { type: Boolean, default: false },
     promoStrikes: { type: Number, default: 0 },
     nsfwStrikes: { type: Number, default: 0 },
     isBanned: { type: Boolean, default: false },

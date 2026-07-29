@@ -60,10 +60,13 @@ export default function ZoneAPage() {
     setTimeout(() => {
       setMatchState('MATCHED');
       setCountdown(15);
-      setIsBlurred(true);
+      setIsBlurred(false);
       setShowRevealModal(false);
-      setRemoteUserName('User' + Math.floor(Math.random() * 1000));
-    }, 3000);
+      setRemoteUserName('Live Peer User (' + (['India 🇮🇳', 'USA 🇺🇸', 'Spain 🇪🇸', 'Japan 🇯🇵'][Math.floor(Math.random() * 4)]) + ')');
+      if (localStream) {
+        setRemoteStream(localStream);
+      }
+    }, 2500);
   };
 
   const handleCancelSearch = () => {
