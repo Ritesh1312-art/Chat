@@ -3,14 +3,11 @@
   "private": true,
   "workspaces": ["apps/*", "packages/*"],
   "scripts": {
-    "dev": "turbo run dev",
-    "build": "turbo run build",
-    "start": "turbo run start",
-    "lint": "turbo run lint",
-    "test": "turbo run test"
+    "dev": "npm run --workspace=apps/web dev",
+    "build": "npm run --workspace=apps/web build",
+    "start": "npm run --workspace=apps/web start"
   },
   "devDependencies": {
-    "turbo": "^2.0.0",
     "typescript": "^5.5.0",
     "@types/node": "^22.0.0"
   },
