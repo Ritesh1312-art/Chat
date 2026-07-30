@@ -119,42 +119,54 @@ export default function ZoneAPage() {
   return (
     <div className="flex flex-col h-[100dvh] bg-[#080810] text-slate-100 overflow-hidden font-inter">
       {matchState === 'IDLE' && (
-        <div className="flex-1 flex flex-col items-center justify-center p-6">
+        <div className="flex-1 flex flex-col items-center justify-center p-6 relative overflow-hidden">
+          {/* Glowing Ambient Mesh Orbs */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] bg-gradient-to-tr from-[#8B5CF6]/25 to-[#06B6D4]/25 blur-[120px] rounded-full pointer-events-none animate-pulse" />
+
           <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col items-center max-w-md w-full"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="flex flex-col items-center max-w-md w-full relative z-10 space-y-6"
           >
-            <div className="mb-12 relative flex items-center justify-center">
+            {/* Center Animated 3D Icon */}
+            <div className="relative flex items-center justify-center mb-4">
               <motion.div 
-                animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }} 
-                transition={{ repeat: Infinity, duration: 3 }}
-                className="absolute w-48 h-48 rounded-full bg-violet-600 blur-[80px]"
+                animate={{ scale: [1, 1.15, 1], rotate: [0, 180, 360] }} 
+                transition={{ repeat: Infinity, duration: 10, ease: 'linear' }}
+                className="absolute w-40 h-40 rounded-full border border-dashed border-[#8B5CF6]/40"
               />
-              <div className="relative z-10 w-24 h-24 rounded-full bg-gradient-to-br from-violet-600 to-cyan-500 flex items-center justify-center shadow-[0_0_40px_rgba(124,58,237,0.4)]">
+              <motion.div 
+                animate={{ scale: [1.1, 1, 1.1] }} 
+                transition={{ repeat: Infinity, duration: 3 }}
+                className="w-24 h-24 rounded-3xl bg-gradient-to-br from-[#8B5CF6] via-[#7C3AED] to-[#06B6D4] flex items-center justify-center shadow-[0_0_50px_rgba(139,92,246,0.5)] border border-white/20"
+              >
                 <Video className="w-12 h-12 text-white" />
-              </div>
+              </motion.div>
             </div>
             
-            <h1 className="text-4xl md:text-5xl font-bold font-space text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-cyan-400 mb-4 text-center">
-              Zone A
-            </h1>
-            <p className="text-slate-400 text-lg text-center mb-10">Ready to meet someone new?</p>
+            <div className="text-center space-y-2">
+              <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white font-space">
+                Zone <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#8B5CF6] via-[#A855F7] to-[#06B6D4]">A</span>
+              </h1>
+              <p className="text-slate-400 text-sm font-medium">
+                Instant 1-on-1 Anonymous Video Match with Live Translation
+              </p>
+            </div>
             
             <button 
               onClick={handleStartMatching}
-              className="w-full py-4 rounded-2xl bg-gradient-to-r from-violet-600 to-cyan-600 text-white font-bold text-lg shadow-[0_0_20px_rgba(124,58,237,0.3)] hover:shadow-[0_0_30px_rgba(124,58,237,0.5)] transition-all hover:-translate-y-1 active:translate-y-0"
+              className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#8B5CF6] via-[#7C3AED] to-[#06B6D4] text-white font-bold text-lg shadow-[0_10px_30px_rgba(139,92,246,0.4)] hover:shadow-[0_15px_40px_rgba(139,92,246,0.6)] transition-all hover:-translate-y-1 active:translate-y-0 tracking-wide"
             >
-              Start Matching
+              ⚡ Start Random Matching
             </button>
             
-            <div className="flex gap-4 mt-8">
-              <div className="bg-white/5 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 flex items-center gap-2">
+            <div className="flex gap-2 flex-wrap justify-center pt-2">
+              <div className="bg-white/[0.04] border border-white/10 px-3.5 py-1.5 rounded-full flex items-center gap-2 backdrop-blur-md shadow-md">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-sm font-medium text-slate-300">Online now: ~1.2K</span>
+                <span className="text-xs font-semibold text-slate-300">1,480 Active Now</span>
               </div>
-              <div className="bg-white/5 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 flex items-center gap-2">
-                <span className="text-sm font-medium text-slate-300">Avg wait: &lt;10s</span>
+              <div className="bg-white/[0.04] border border-white/10 px-3.5 py-1.5 rounded-full flex items-center gap-2 backdrop-blur-md shadow-md">
+                <span className="text-xs font-semibold text-slate-300">🌐 30+ Languages Live</span>
               </div>
             </div>
           </motion.div>
@@ -162,40 +174,46 @@ export default function ZoneAPage() {
       )}
 
       {matchState === 'SEARCHING' && (
-        <div className="flex-1 flex flex-col items-center justify-center p-6">
+        <div className="flex-1 flex flex-col items-center justify-center p-6 relative overflow-hidden">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] bg-gradient-to-tr from-[#06B6D4]/20 to-[#8B5CF6]/20 blur-[100px] rounded-full pointer-events-none animate-pulse" />
+
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex flex-col items-center"
+            className="flex flex-col items-center relative z-10 space-y-6"
           >
-            <div className="relative w-32 h-32 mb-8">
+            {/* Cyber Radar Scanner */}
+            <div className="relative w-40 h-40 flex items-center justify-center">
               <motion.div 
                 animate={{ rotate: 360 }}
                 transition={{ repeat: Infinity, duration: 2, ease: "linear" }}
-                className="absolute inset-0 rounded-full border-4 border-transparent border-t-cyan-400 border-r-violet-500 opacity-80"
+                className="absolute inset-0 rounded-full border-4 border-transparent border-t-[#06B6D4] border-r-[#8B5CF6] shadow-[0_0_30px_rgba(6,182,212,0.4)]"
               />
               <motion.div 
                 animate={{ rotate: -360 }}
                 transition={{ repeat: Infinity, duration: 3, ease: "linear" }}
-                className="absolute inset-2 rounded-full border-4 border-transparent border-b-cyan-400 border-l-violet-500 opacity-60"
+                className="absolute inset-3 rounded-full border-4 border-transparent border-b-[#EC4899] border-l-[#8B5CF6]"
               />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Video className="w-8 h-8 text-violet-400" />
+              <div className="w-20 h-20 rounded-full bg-white/[0.05] border border-white/15 flex items-center justify-center backdrop-blur-xl">
+                <Video className="w-8 h-8 text-[#06B6D4] animate-pulse" />
               </div>
             </div>
             
-            <h2 className="text-2xl font-bold font-space text-white mb-2 flex items-center gap-1">
-              Finding your match
-              <motion.span animate={{ opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 1.5, times: [0, 0.5, 1] }}>.</motion.span>
-              <motion.span animate={{ opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 1.5, times: [0, 0.5, 1], delay: 0.2 }}>.</motion.span>
-              <motion.span animate={{ opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 1.5, times: [0, 0.5, 1], delay: 0.4 }}>.</motion.span>
-            </h2>
+            <div className="text-center space-y-1">
+              <h2 className="text-2xl font-bold font-space text-white flex items-center justify-center gap-1">
+                Searching Global Radar
+                <motion.span animate={{ opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 1.5, times: [0, 0.5, 1] }}>.</motion.span>
+                <motion.span animate={{ opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 1.5, times: [0, 0.5, 1], delay: 0.2 }}>.</motion.span>
+                <motion.span animate={{ opacity: [0, 1, 0] }} transition={{ repeat: Infinity, duration: 1.5, times: [0, 0.5, 1], delay: 0.4 }}>.</motion.span>
+              </h2>
+              <p className="text-slate-400 text-xs font-medium">Scanning 30+ language peers worldwide</p>
+            </div>
             
             <button 
               onClick={handleCancelSearch}
-              className="mt-12 px-8 py-3 rounded-xl bg-white/10 text-white font-medium hover:bg-white/20 transition-colors"
+              className="px-8 py-3 rounded-xl bg-white/[0.06] border border-white/15 text-slate-300 font-semibold hover:bg-white/10 transition-all active:scale-95 text-sm"
             >
-              Cancel
+              Cancel Match
             </button>
           </motion.div>
         </div>

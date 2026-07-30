@@ -5,18 +5,14 @@ import { motion } from 'framer-motion';
 
 export default function BottomNav() {
   const pathname = usePathname();
-  const unreadMessages = 2; // Mock
 
   const tabs = [
     {
-      name: 'Home',
+      name: 'Chats',
       href: '/zone-b',
       icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
-          <rect x="3" y="3" width="7" height="7" />
-          <rect x="14" y="3" width="7" height="7" />
-          <rect x="14" y="14" width="7" height="7" />
-          <rect x="3" y="14" width="7" height="7" />
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
         </svg>
       )
     },
@@ -24,9 +20,9 @@ export default function BottomNav() {
       name: 'Zone A',
       href: '/zone-a',
       icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
           <polygon points="23 7 16 12 23 17 23 7" />
-          <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+          <rect x="1" y="5" width="15" height="14" rx="3" ry="3" />
         </svg>
       )
     },
@@ -34,7 +30,7 @@ export default function BottomNav() {
       name: 'Explore',
       href: '/explore',
       icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
           <circle cx="12" cy="12" r="10" />
           <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
         </svg>
@@ -44,11 +40,11 @@ export default function BottomNav() {
       name: 'Wallet',
       href: '/wallet',
       icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
           <circle cx="12" cy="12" r="10" />
           <path d="M12 8v8" />
-          <path d="M10 10h4" />
-          <path d="M10 14h4" />
+          <path d="M9.5 10h5" />
+          <path d="M9.5 14h5" />
         </svg>
       )
     },
@@ -56,7 +52,7 @@ export default function BottomNav() {
       name: 'Profile',
       href: '/profile',
       icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
           <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
           <circle cx="12" cy="7" r="4" />
         </svg>
@@ -65,34 +61,29 @@ export default function BottomNav() {
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-[#080810]/80 backdrop-blur-[16px] border-t border-white/10 pb-safe">
-      <div className="flex justify-around items-center h-[72px] px-2">
+    <div className="fixed bottom-4 left-0 right-0 z-50 px-4 max-w-lg mx-auto pointer-events-none">
+      <div className="pointer-events-auto bg-[#070712]/80 backdrop-blur-2xl border border-white/15 rounded-3xl p-1.5 shadow-[0_15px_40px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,255,255,0.15)] flex justify-between items-center">
         {tabs.map((tab) => {
           const isActive = pathname === tab.href;
           
           return (
-            <Link key={tab.name} href={tab.href} className="relative flex flex-col items-center justify-center w-full h-full">
-              <motion.div
-                animate={{ scale: isActive ? 1.1 : 1, color: isActive ? '#7C3AED' : '#64748B' }}
-                className={`relative z-10 flex flex-col items-center gap-1 ${isActive ? 'drop-shadow-[0_0_8px_rgba(124,58,237,0.8)]' : ''}`}
-              >
-                <div className="relative">
-                  {tab.icon}
-                  {tab.name === 'Home' && unreadMessages > 0 && (
-                    <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-[#EF4444] rounded-full border-2 border-[#080810] flex items-center justify-center">
-                      {/* Optional: Add number here if desired */}
-                    </div>
-                  )}
-                </div>
-                <span className="text-[10px] font-medium">{tab.name}</span>
-              </motion.div>
-              
+            <Link key={tab.name} href={tab.href} className="relative flex flex-col items-center justify-center flex-1 py-2 rounded-2xl transition-all">
               {isActive && (
                 <motion.div
-                  layoutId="bottomNavIndicator"
-                  className="absolute top-0 w-12 h-1 bg-gradient-to-r from-transparent via-[#7C3AED] to-transparent"
+                  layoutId="activeDockPill"
+                  className="absolute inset-0 bg-gradient-to-r from-[#8B5CF6]/30 via-[#7C3AED]/30 to-[#06B6D4]/20 border border-[#8B5CF6]/40 rounded-2xl shadow-[0_0_15px_rgba(139,92,246,0.3)]"
+                  transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 />
               )}
+              
+              <div className={`relative z-10 flex flex-col items-center gap-1 transition-colors ${isActive ? 'text-white' : 'text-slate-400 hover:text-slate-200'}`}>
+                <div className={isActive ? 'drop-shadow-[0_0_10px_rgba(139,92,246,0.9)] text-[#A855F7]' : ''}>
+                  {tab.icon}
+                </div>
+                <span className={`text-[10px] font-bold tracking-tight ${isActive ? 'text-white' : 'text-slate-400'}`}>
+                  {tab.name}
+                </span>
+              </div>
             </Link>
           );
         })}

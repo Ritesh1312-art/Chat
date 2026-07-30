@@ -38,19 +38,22 @@ export default function ExplorePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#080810] text-slate-100 font-inter pb-24">
-      <header className="pt-8 pb-4 px-6 sticky top-0 z-20 bg-[#080810]/80 backdrop-blur-xl border-b border-white/5">
+    <div className="min-h-screen bg-[#040409] text-slate-100 font-sans pb-28">
+      <header className="pt-6 pb-4 px-6 sticky top-0 z-30 bg-[#040409]/80 backdrop-blur-2xl border-b border-white/10">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold font-space text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-cyan-400">
-            Explore
-          </h1>
+          <div>
+            <h1 className="text-3xl font-black font-space tracking-tight text-white">
+              Explore <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#8B5CF6] to-[#06B6D4]">Global</span>
+            </h1>
+            <p className="text-slate-400 text-xs font-medium">Discover Active Users & Vibe Peers</p>
+          </div>
           <button 
             onClick={() => setShowFilters(!showFilters)}
-            className={`p-2 rounded-xl border transition-colors flex items-center gap-2 text-sm font-medium ${
-              showFilters ? 'bg-violet-600 border-violet-500 text-white' : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+            className={`px-4 py-2 rounded-2xl border transition-all flex items-center gap-2 text-xs font-bold ${
+              showFilters ? 'bg-gradient-to-r from-[#8B5CF6] to-[#06B6D4] border-transparent text-white shadow-[0_0_15px_rgba(139,92,246,0.4)]' : 'bg-white/[0.04] border-white/10 text-slate-300 hover:bg-white/10'
             }`}
           >
-            <Filter className="w-4 h-4" /> Filters
+            <Filter className="w-3.5 h-3.5" /> Filters
           </button>
         </div>
 
@@ -62,15 +65,15 @@ export default function ExplorePage() {
               exit={{ height: 0, opacity: 0 }}
               className="overflow-hidden mt-4"
             >
-              <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-4">
+              <div className="bg-white/[0.04] border border-white/15 rounded-3xl p-5 space-y-4 backdrop-blur-2xl">
                 <div>
-                  <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 block">Gender</label>
-                  <div className="flex gap-2 bg-black/40 p-1 rounded-xl">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 block">Gender Filter</label>
+                  <div className="flex gap-2 bg-black/40 p-1.5 rounded-2xl border border-white/10">
                     {['Any', 'Male', 'Female', 'Other'].map(g => (
                       <button 
                         key={g}
                         onClick={() => setGender(g)}
-                        className={`flex-1 py-1.5 text-sm font-medium rounded-lg transition-colors ${gender === g ? 'bg-white/20 text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'}`}
+                        className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all ${gender === g ? 'bg-gradient-to-r from-[#8B5CF6] to-[#06B6D4] text-white shadow-md' : 'text-slate-400 hover:text-slate-200'}`}
                       >
                         {g}
                       </button>
@@ -78,30 +81,27 @@ export default function ExplorePage() {
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 block">Language</label>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 block">Native Language</label>
                   <div className="relative">
-                    <select className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-slate-200 appearance-none outline-none focus:border-violet-500 transition-colors">
+                    <select className="w-full bg-black/50 border border-white/10 rounded-2xl px-4 py-3 text-xs text-slate-200 appearance-none outline-none focus:border-[#8B5CF6] transition-colors font-medium">
                       <option value="any">Any Language</option>
                       <option value="en">English 🇬🇧</option>
                       <option value="hi">Hindi 🇮🇳</option>
                       <option value="es">Spanish 🇪🇸</option>
                     </select>
-                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                   </div>
                 </div>
-                <button className="w-full py-2.5 bg-violet-600 hover:bg-violet-700 text-white rounded-xl text-sm font-bold transition-colors">
-                  Apply Filters
-                </button>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </header>
 
-      <main className="p-6">
+      <main className="p-6 max-w-6xl mx-auto">
         {loading ? (
           <div className="flex justify-center py-16">
-            <div className="w-8 h-8 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-[#8B5CF6] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -111,43 +111,37 @@ export default function ExplorePage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.05 }}
-                className="bg-white/5 border border-white/10 rounded-3xl p-5 flex flex-col items-center text-center hover:bg-white/10 transition-colors group relative overflow-hidden"
+                className="glass-card-interactive p-5 flex flex-col items-center text-center group relative overflow-hidden"
               >
                 {u.isVIP && (
-                  <span className="absolute top-3 right-3 text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-full font-semibold">
-                    VIP
+                  <span className="absolute top-3 right-3 text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2.5 py-0.5 rounded-full font-bold">
+                    👑 VIP
                   </span>
                 )}
-                <div className="w-20 h-20 rounded-full bg-slate-800 flex items-center justify-center mb-3 overflow-hidden">
+                <div className="w-20 h-20 rounded-3xl bg-slate-900 border border-white/15 flex items-center justify-center mb-3 overflow-hidden shadow-lg group-hover:scale-105 transition-transform">
                   {u.avatar ? (
                     <img src={u.avatar} alt="" className="w-full h-full object-cover" />
                   ) : (
                     <span className="text-3xl">👤</span>
                   )}
                 </div>
-                <h3 className="font-bold text-slate-200 text-lg mb-1 truncate w-full">{u.displayName || u.name}</h3>
-                <p className="text-xs text-slate-400 mb-3 flex items-center gap-1">
-                  🌐 {u.nativeLanguage?.toUpperCase() || 'EN'}
+                <h3 className="font-bold text-white text-base mb-0.5 truncate w-full">{u.displayName || u.name}</h3>
+                <p className="text-[11px] font-semibold text-slate-400 mb-4 flex items-center gap-1">
+                  🌐 {u.nativeLanguage?.toUpperCase() || 'EN'} • <span className="text-emerald-400">Online</span>
                 </p>
                 
                 <div className="mt-auto pt-2 w-full">
                   <button 
                     onClick={() => handleStartChat(u._id || u.id)}
-                    className="w-full py-2 rounded-xl bg-white/10 text-white text-sm font-semibold group-hover:bg-violet-600 transition-colors flex items-center justify-center gap-2"
+                    className="w-full py-2.5 rounded-xl bg-white/[0.06] hover:bg-gradient-to-r hover:from-[#8B5CF6] hover:to-[#06B6D4] text-white text-xs font-bold border border-white/10 transition-all flex items-center justify-center gap-2 shadow-md active:scale-95"
                   >
-                    <MessageCircle className="w-4 h-4" /> Chat
+                    <MessageCircle className="w-3.5 h-3.5" /> Start Chat
                   </button>
                 </div>
               </motion.div>
             ))}
           </div>
         )}
-        
-        <div className="mt-8 text-center">
-          <button className="px-6 py-2.5 rounded-full border border-white/20 text-slate-300 text-sm font-medium hover:bg-white/5 transition-colors">
-            Load more
-          </button>
-        </div>
       </main>
     </div>
   );

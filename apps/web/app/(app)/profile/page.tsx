@@ -93,56 +93,63 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen p-4 md:p-8 space-y-6 max-w-2xl mx-auto pb-24">
-      {/* Profile Header */}
-      <div className="bg-white/5 border border-white/10 rounded-3xl p-6 backdrop-blur-xl flex flex-col items-center relative overflow-hidden">
-        <div className="absolute top-0 w-full h-32 bg-gradient-to-r from-violet-600/30 to-cyan-600/30 blur-2xl"></div>
+    <div className="min-h-screen p-4 md:p-8 space-y-6 max-w-2xl mx-auto pb-28">
+      {/* Profile Luxury Card Header */}
+      <div className="glass-card p-6 flex flex-col items-center relative overflow-hidden">
+        <div className="absolute top-0 w-full h-32 bg-gradient-to-r from-[#8B5CF6]/30 via-[#7C3AED]/20 to-[#06B6D4]/30 blur-2xl pointer-events-none" />
         
         <div className="relative group cursor-pointer mt-4">
-          <div className="w-24 h-24 rounded-full p-1 bg-gradient-to-tr from-violet-500 to-cyan-500">
-            <img src={user.avatar} alt={user.name} className="w-full h-full rounded-full bg-[#080810] object-cover" />
+          <div className="w-24 h-24 rounded-3xl p-1 bg-gradient-to-tr from-[#8B5CF6] via-[#EC4899] to-[#06B6D4] shadow-[0_0_30px_rgba(139,92,246,0.5)]">
+            <img src={user.avatar} alt={user.name} className="w-full h-full rounded-[20px] bg-[#040409] object-cover" />
           </div>
-          <div className="absolute inset-0 bg-black/50 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+          <div className="absolute inset-0 bg-black/60 rounded-3xl opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all backdrop-blur-sm">
             <Camera className="w-6 h-6 text-white" />
           </div>
         </div>
 
-        <div className="mt-4 text-center z-10">
-          <h2 className="text-2xl font-space font-bold text-white flex items-center justify-center">
+        <div className="mt-4 text-center z-10 space-y-1">
+          <h2 className="text-2xl font-black font-space text-white flex items-center justify-center gap-2">
             {user.name}
-            <button className="ml-2 p-1 hover:bg-white/10 rounded-full transition-colors">
-              <Edit3 className="w-4 h-4 text-white/50" />
-            </button>
+            {(authUser as any)?.isAdmin && (
+              <span className="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/40 px-2.5 py-0.5 rounded-full font-bold">
+                👑 ADMIN VIP
+              </span>
+            )}
           </h2>
-          <p className="text-white/50 font-mono mt-1">{user.phone}</p>
-          <p className="text-white/30 text-xs mt-1">Member since {user.memberSince}</p>
+          <p className="text-slate-400 font-mono text-xs">{user.phone}</p>
         </div>
 
         <Link href="/wallet" className="mt-6 z-10">
           <motion.div 
-            whileHover={{ scale: 1.05 }}
-            className="flex items-center space-x-2 bg-[#F59E0B]/20 text-[#F59E0B] border border-[#F59E0B]/30 px-4 py-2 rounded-full font-bold"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+            className="flex items-center space-x-2 bg-gradient-to-r from-amber-500/20 to-yellow-600/20 border border-amber-500/40 px-5 py-2.5 rounded-2xl text-amber-300 font-bold text-sm shadow-[0_0_20px_rgba(245,158,11,0.2)]"
           >
-            <span>Wallet Balance:</span>
-            <span className="font-space">{user.balance} Coins</span>
+            <span>👑 Coins Balance:</span>
+            <span className="font-space text-base">{(authUser as any)?.isAdmin || user.balance >= 999999 ? '∞ Infinity' : `${user.balance} Coins`}</span>
           </motion.div>
         </Link>
       </div>
 
-      {/* Sections */}
+      {/* Accordion Sections */}
       <div className="space-y-4">
         
         {/* Preferences Section */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-md">
+        <div className="glass-card overflow-hidden">
           <button 
             onClick={() => toggleSection('preferences')}
-            className="w-full p-5 flex items-center justify-between bg-white/5 hover:bg-white/10 transition-colors"
+            className="w-full p-5 flex items-center justify-between hover:bg-white/[0.04] transition-all"
           >
             <div className="flex items-center space-x-3 text-white">
-              <Globe className="w-5 h-5 text-violet-400" />
-              <span className="font-space font-semibold text-lg">Preferences</span>
+              <div className="p-2.5 rounded-2xl bg-[#8B5CF6]/20 border border-[#8B5CF6]/30 text-[#A855F7]">
+                <Globe className="w-5 h-5" />
+              </div>
+              <div className="text-left">
+                <span className="font-space font-bold text-base block text-white">Language & Preferences</span>
+                <span className="text-xs text-slate-400 font-medium">Set native language and Zone B filters</span>
+              </div>
             </div>
-            <ChevronDown className={`w-5 h-5 text-white/50 transition-transform ${expandedSection === 'preferences' ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${expandedSection === 'preferences' ? 'rotate-180' : ''}`} />
           </button>
           
           <AnimatePresence>
@@ -151,52 +158,28 @@ export default function ProfilePage() {
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                className="px-5 pb-5 space-y-4"
+                className="px-5 pb-5 space-y-4 border-t border-white/10 pt-4"
               >
-                <div className="pt-2">
-                  <label className="block text-sm text-white/60 mb-2">Native Language</label>
-                  <select className="w-full bg-[#080810]/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-violet-500">
+                <div>
+                  <label className="block text-xs font-bold text-slate-300 mb-2">Native Language</label>
+                  <select className="w-full bg-black/50 border border-white/15 rounded-2xl p-3 text-sm text-white focus:outline-none focus:border-[#8B5CF6] transition-colors font-medium">
                     {ALL_WORLD_LANGUAGES.map(lang => (
-                      <option key={lang.code} value={lang.code} className="bg-[#080810]">
+                      <option key={lang.code} value={lang.code} className="bg-[#040409]">
                         {lang.name} ({lang.nativeName})
                       </option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm text-white/60 mb-2">Your Gender</label>
-                  <select className="w-full bg-[#080810]/50 border border-white/10 rounded-xl p-3 text-white focus:outline-none focus:border-violet-500">
+                  <label className="block text-xs font-bold text-slate-300 mb-2">Your Gender</label>
+                  <select className="w-full bg-black/50 border border-white/15 rounded-2xl p-3 text-sm text-white focus:outline-none focus:border-[#8B5CF6] transition-colors font-medium">
                     <option value="male">Male</option>
                     <option value="female">Female</option>
                     <option value="prefer_not_to_say">Prefer Not To Say</option>
                   </select>
                 </div>
-                <div className="pt-2 border-t border-white/10">
-                  <h4 className="text-white/80 font-medium mb-3">Zone B Filters</h4>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs text-white/50 mb-1">Preferred Gender</label>
-                      <select className="w-full bg-[#080810]/50 border border-white/10 rounded-xl p-2 text-sm text-white">
-                        <option value="any">Any</option>
-                        <option value="female">Female</option>
-                        <option value="male">Male</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-xs text-white/50 mb-1">Preferred Language</label>
-                      <select className="w-full bg-[#080810]/50 border border-white/10 rounded-xl p-2 text-sm text-white">
-                        <option value="any">Any Language</option>
-                        {ALL_WORLD_LANGUAGES.map(lang => (
-                          <option key={lang.code} value={lang.code} className="bg-[#080810]">
-                            {lang.name} ({lang.nativeName})
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <button className="w-full py-3 mt-2 bg-white/10 hover:bg-white/20 text-white rounded-xl font-medium transition-colors">
-                  Save Changes
+                <button className="w-full py-3 bg-gradient-to-r from-[#8B5CF6] to-[#06B6D4] text-white rounded-2xl font-bold text-xs shadow-lg transition-all active:scale-95">
+                  Save Preference Settings
                 </button>
               </motion.div>
             )}
@@ -204,16 +187,21 @@ export default function ProfilePage() {
         </div>
 
         {/* Privacy & Safety Section */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-md">
+        <div className="glass-card overflow-hidden">
           <button 
             onClick={() => toggleSection('privacy')}
-            className="w-full p-5 flex items-center justify-between bg-white/5 hover:bg-white/10 transition-colors"
+            className="w-full p-5 flex items-center justify-between hover:bg-white/[0.04] transition-all"
           >
             <div className="flex items-center space-x-3 text-white">
-              <Shield className="w-5 h-5 text-emerald-400" />
-              <span className="font-space font-semibold text-lg">Privacy & Safety</span>
+              <div className="p-2.5 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400">
+                <Shield className="w-5 h-5" />
+              </div>
+              <div className="text-left">
+                <span className="font-space font-bold text-base block text-white">Girl Safety & Moderation</span>
+                <span className="text-xs text-slate-400 font-medium">NSFW Blur, Panic Button & Blocked Users</span>
+              </div>
             </div>
-            <ChevronDown className={`w-5 h-5 text-white/50 transition-transform ${expandedSection === 'privacy' ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${expandedSection === 'privacy' ? 'rotate-180' : ''}`} />
           </button>
           
           <AnimatePresence>
@@ -222,72 +210,31 @@ export default function ProfilePage() {
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
-                className="px-5 pb-5 space-y-4"
+                className="px-5 pb-5 space-y-4 border-t border-white/10 pt-4"
               >
-                <div className="pt-4 flex items-center justify-between">
+                <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="text-white font-medium">Enable NSFW Detection</h4>
-                    <p className="text-white/40 text-xs mt-1">Automatically blurs inappropriate content</p>
+                    <h4 className="text-white font-bold text-xs">Enable Automated NSFW Blur</h4>
+                    <p className="text-slate-400 text-[11px] mt-0.5">Automatically blurs sensitive streams</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input type="checkbox" className="sr-only peer" defaultChecked={user.settings.nsfwEnabled} />
                     <div className="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
                   </label>
                 </div>
-                <div className="flex items-center justify-between border-t border-white/10 pt-4">
-                  <div>
-                    <h4 className="text-white font-medium">Share Online Status</h4>
-                    <p className="text-white/40 text-xs mt-1">Let others see when you're active</p>
-                  </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="sr-only peer" defaultChecked={user.settings.shareStatus} />
-                    <div className="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-violet-500"></div>
-                  </label>
-                </div>
-                <div className="border-t border-white/10 pt-4">
-                  <button className="flex items-center text-white/70 hover:text-white transition-colors">
-                    <Users className="w-4 h-4 mr-2" />
-                    Manage Blocked Users (3)
-                  </button>
-                </div>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
 
-        {/* Account Section */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-md">
+        {/* Account Controls */}
+        <div className="glass-card p-5 space-y-3">
           <button 
-            onClick={() => toggleSection('account')}
-            className="w-full p-5 flex items-center justify-between bg-white/5 hover:bg-white/10 transition-colors"
+            onClick={handleLogout}
+            className="w-full py-3.5 rounded-2xl bg-white/[0.04] border border-white/15 text-slate-200 hover:bg-red-500/10 hover:border-red-500/30 hover:text-red-400 font-bold transition-all flex items-center justify-center gap-2 text-xs"
           >
-            <div className="flex items-center space-x-3 text-white">
-              <LogOut className="w-5 h-5 text-cyan-400" />
-              <span className="font-space font-semibold text-lg">Account</span>
-            </div>
-            <ChevronDown className={`w-5 h-5 text-white/50 transition-transform ${expandedSection === 'account' ? 'rotate-180' : ''}`} />
+            <LogOut className="w-4 h-4" /> Log Out Account
           </button>
-          
-          <AnimatePresence>
-            {expandedSection === 'account' && (
-              <motion.div 
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                className="px-5 pb-5 space-y-3 pt-2"
-              >
-                <button 
-                  onClick={handleLogout}
-                  className="w-full py-3 rounded-xl border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/10 font-medium transition-colors flex items-center justify-center"
-                >
-                  <LogOut className="w-4 h-4 mr-2" /> Logout
-                </button>
-                <button className="w-full py-3 rounded-xl bg-red-500/10 text-red-500 hover:bg-red-500/20 font-medium transition-colors flex items-center justify-center">
-                  <Trash2 className="w-4 h-4 mr-2" /> Delete Account
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
 
       </div>
