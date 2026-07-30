@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation';
 
-// Root page: immediately redirect to login
-// AuthContext will redirect to /zone-b if already logged in
+// Root page: redirect to home dashboard (AuthContext redirects to /login if unauthenticated)
 export default function RootPage() {
-  redirect('/login');
+  redirect('/home');
 }

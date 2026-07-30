@@ -45,12 +45,12 @@ export default function LoginPage() {
       } else {
         await loginWithGoogle('ritesh.gupta131290@gmail.com', 'Ritesh Gupta', '');
       }
-      router.push('/zone-b');
+      router.push('/home');
     } catch (err: any) {
       console.warn('[Google Auth] Popup fallback:', err);
       try {
         await loginWithGoogle('ritesh.gupta131290@gmail.com', 'Ritesh Gupta', '');
-        router.push('/zone-b');
+        router.push('/home');
       } catch (fErr: any) {
         setError(fErr.message || 'Google Sign-in failed');
       }
@@ -73,7 +73,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await loginWithGoogle(email, email.split('@')[0], '');
-      router.push('/zone-b');
+      router.push('/home');
     } catch (err: any) {
       setError(err.message || 'Email login failed');
     } finally {
